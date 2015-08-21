@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<script src="jquery.js"></script>
+<script src="jsrender.js"></script>
+<script>
+    var user={
+        name:"mingjie",
+        age:"18",
+        desc:"<h1>my name is  mingjie </h1>",
+        sayHello:function(){
+            return "hello";
+        },
+        say:function(msg)
+        {
+           return msg;
+        },
+        computer:{
+            cpu:"i5",
+            memory:"8G",
+            disk:"1TB"
+        },
+        isGirl:false,
+        isBoy:true,
+        favs:['羽毛球','lol','游水','跑步','骑行'],
+        firends:[{
+            name:'xiaoming',
+            age:19
+        },
+            {
+                name:'xiaohong',
+                age:20
+            },
+            {
+                name:'xiaobai',
+                age:21
+            }
+        ],
+        girls:[],
+        mac:{},
+        homePage:"https://wmj.wyuol.com/home/9?page=1&lang=中文"
+    }
+    var arr1=[
+        {
+            name:'xiaoming',
+            age:19
+        },
+        {
+            name:'xiaohong',
+            age:20
+        },
+        {
+            name:'xiaobai',
+            age:21
+        }
+    ]
+    var arr2=[1,2,3,4,5,6,7]
+</script>
+<script id="t" type="text/x-jsrender">
+
+    {{!--  变量引用  --}}
+     {{:name}}      {{!-- mingjie    --}}
+     {{:favs}}      {{!-- 羽毛球,lol,游水,跑步,骑行  --}}
+     {{:firends}}   {{!--[object Object],[object Object],[object Object]--}}
+     {{:desc}}      {{!--my name is mingjie --}}
+      {{>desc}}     {{!--<h1>my name is mingjie </h1> mingjie323  --}}
+     {{*:arr2}}      {{!--1,2,3,4,5,6,7--!}}   {{!-- 全局作用域--!}}
+     {{!--表达式--}}
+
+      {{:name +"323"}} {{!--  mingjie323  --}}
+      {{:1+2*3}}     {{!-- 7--}}
+      {{:sayHello()}}   {{!-- hello--}}
+       {{:say("AINY　ＺＫＹ")}} {{!-- AINY ZKY--}}
+
+       {{* g_a=111 }}
+       {{*:g_a}}       {{!--111--}}
+
+
+
+
+
+
+
+
+      {{!-- 循环 --}}
+
+
+       {{for favs}}
+          {{:#index}}: {{:#data}}  {{!--0: 羽毛球 1: lol 2: 游水 3: 跑步 4: 骑行--}}
+       {{/for}}
+
+       {{for computer}}
+        {{:#data.cpu}} {{:~root.name}}      {{!--i5 mingjie--}}
+       {{/for}}
+
+        {{for firends tmpl="#t3" /}} {{!--xiaoming xiaohong xiaobai--}}
+
+       {{for girls}}
+       {{else}}
+         no girls!
+       {{/for}}
+
+       {{props computer}}
+           {{:key}} {{:prop}}       {{!--cpu i5 memory 8G disk 1TB--}}
+       {{/props}}
+
+       {{props computer tmpl="#t4"/}} {{!--cpu i5 memory 8G disk 1TB--}}
+
+        {{props mac}}
+        {{else}}
+        no mac!                         {{!--no mac--}}
+        {{/props}}
+
+
+    {{!-- 逻辑--!}}
+
+    {{if isBoy}}
+       is boy               {{!--is boy--}}
+    {{else isGirl}}
+      is girl
+    {{else}}
+      not boy and not girl
+    {{/if}}
+
+     {{if !true}}
+        false
+     {{else}}               {{!--true--}}
+       true
+     {{/if}}
+
+
+
+      {{!-- 层次 --}}
+       {{include tmpl="#t2"/}} {{!--羽毛球,lol,游水,跑步,骑行 --}}
+
+
+      {{!--上下文--}}
+
+        {{:~color }}
+        {{:~upper.call("dsd")}}         {{!--red DSD--}}
+
+       {{!--过滤器 --}}
+       {{html:desc}}   {{>desc}}                 {{!-- <h1>my name is mingjie </h1>--}}
+       {{url:homePage}}                          {{!--https://wmj.wyuol.com/home/9?page=1&lang=%E4%B8%AD%E6%96%87--}}
+       {{attr:desc}}                             {{!-- <h1>my name is mingjie </h1> --}}
+       {{custom:"abc"}}                          {{!--ABC--}}
+       {{!-- 自定义标签--}}
+
+       {{myTag  "dsd" /}}                        {{!--DSD--}}
+
+
+       {{myTagBlock }}
+
+        {{:desc}}
+       {{/myTagBlock}}                          {{!--my name is mingjie --}}
+
+
+
+
+
+
+</script>
+<script id="t2" type="text/x-jsrender">
+     {{:favs}}
+
+</script>
+<script id="t3" type="text/x-jsrender">
+     {{:name}}
+
+</script>
+<script id="t4" type="text/x-jsrender">
+     {{:key}} {{:prop}}
+
+</script>
+<body>
+
+</body>
+<script>
+    $.views.settings.allowCode= true;//开启全局变量模式
+    $.views.converters('custom',function(str){
+
+        return str.toUpperCase();
+    });
+    $.views.tags("myTag",function()
+    {
+        return arguments[0].toUpperCase();
+    })
+    $.views.tags({
+        myTagBlock:function(val){
+            return "<h1> "+this.tagCtx.render(val)+"</h1>";
+        }
+    })
+
+    var t= $.templates('#t');
+    $('body').html(t.render(user,{color:'red',upper:String.prototype.toUpperCase}));
+   // $('#t').render(user);
+</script>
+</html>
